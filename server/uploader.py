@@ -4,6 +4,16 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from google.cloud import storage  # make sure to install google-cloud-storage package
 
+def clear_directory(dir_path):
+    print("Clearing directory...")
+    for filename in os.listdir(dir_path):
+        file_path = os.path.join(dir_path, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
 class Handler(FileSystemEventHandler):
     def process(self, event):
         # Extract file extension
@@ -25,6 +35,12 @@ class Handler(FileSystemEventHandler):
             blob.upload_from_filename(blob_name)
 
             print(f"File {blob_name} uploaded to {bucket_name}.")
+            time.sleep(10)
+            # Delete the file from the local directory
+            clear_directory('：saved')
+
+            
+
         else:
             print(f"Ignored non-.mov event - {event.src_path}.")
 
